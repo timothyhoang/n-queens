@@ -86,10 +86,12 @@
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      var board = this;
-      return this.rows().some(function(row, rowIndex) {
-        return board.hasRowConflictAt(rowIndex);
-      });
+      for (var rowIndex = 0; rowIndex < this.get('n'); rowIndex++) {
+        if (this.hasRowConflictAt(rowIndex)) {
+          return true;
+        }
+      }
+      return false;
     },
 
 
