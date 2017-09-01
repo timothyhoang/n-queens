@@ -23,15 +23,13 @@ window.findNRooksSolution = function(n) {
 
     for (var col = 0; col < n; col++) {
       board.togglePiece(row, col);
-      if (board.hasRowConflictAt(row) || board.hasColConflictAt(col)) {
-        board.togglePiece(row, col);
-      } else {
+      if (!board.hasColConflictAt(col)) {
         getSolution(board, row + 1);
         if (solution) {
           return;
         }
-        board.togglePiece(row, col);
       }
+      board.togglePiece(row, col);
     }
   };
 
@@ -43,35 +41,24 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  // var solutionCount = 0;
+  var solutionCount = 0;
 
-  // var countSolutions = function(board, row) {
-  //   if (row === n) {
-  //     solutionCount++;
-  //     return;
-  //   }
-
-  //   for (var col = 0; col < n; col++) {
-  //     board.togglePiece(row, col);
-  //     if (board.hasRowConflictAt(row) || board.hasColConflictAt(col)) {
-  //       board.togglePiece(row, col);
-  //     } else {
-  //       countSolutions(board, row + 1);
-  //       board.togglePiece(row, col);
-  //     }
-  //   }
-  // };
-
-  // countSolutions(new Board({n: n}), 0);
-
-  var factorial = function (n) {
-    if (n === 0) {
-      return 1;
+  var countSolutions = function(board, row, validCols) {
+    if (row === n) {
+      solutionCount++;
+      return;
     }
-    return n * factorial(n - 1);
-  }
 
-  solutionCount = factorial(n);
+    for (var col of validCols) {
+      board.togglePiece(row, col);
+      if (!board.hasColConflictAt(col)) {
+        countSolutions(board, row + 1, validCols.filter((c) => c !== col));
+      }
+      board.togglePiece(row, col);
+    }
+  };
+
+  countSolutions(new Board({n: n}), 0, [...new Array(n).keys()]);
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
@@ -89,19 +76,16 @@ window.findNQueensSolution = function(n) {
 
     for (var col = 0; col < n; col++) {
       board.togglePiece(row, col);
-      var hasRowConflict = board.hasRowConflictAt(row);
       var hasColConflict = board.hasColConflictAt(col);
       var hasMajorDiagonalConflict = board.hasMajorDiagonalConflictAt(board._getFirstRowColumnIndexForMajorDiagonalOn(row, col));
       var hasMinorDiagonalConflict = board.hasMinorDiagonalConflictAt(board._getFirstRowColumnIndexForMinorDiagonalOn(row, col));
-      if (hasRowConflict || hasColConflict || hasMajorDiagonalConflict || hasMinorDiagonalConflict) {
-        board.togglePiece(row, col);
-      } else {
+      if (!hasColConflict && !hasMajorDiagonalConflict && !hasMinorDiagonalConflict) {
         getSolution(board, row + 1);
         if (solution) {
           return;
         }
-        board.togglePiece(row, col);
       }
+      board.togglePiece(row, col);
     }
   };
 
@@ -127,16 +111,13 @@ window.countNQueensSolutions = function(n) {
 
     for (var col = 0; col < n; col++) {
       board.togglePiece(row, col);
-      var hasRowConflict = board.hasRowConflictAt(row);
       var hasColConflict = board.hasColConflictAt(col);
       var hasMajorDiagonalConflict = board.hasMajorDiagonalConflictAt(board._getFirstRowColumnIndexForMajorDiagonalOn(row, col));
       var hasMinorDiagonalConflict = board.hasMinorDiagonalConflictAt(board._getFirstRowColumnIndexForMinorDiagonalOn(row, col));
-      if (hasRowConflict || hasColConflict || hasMajorDiagonalConflict || hasMinorDiagonalConflict) {
-        board.togglePiece(row, col);
-      } else {
+      if (!hasColConflict && !hasMajorDiagonalConflict && !hasMinorDiagonalConflict) {
         countSolutions(board, row + 1);
-        board.togglePiece(row, col);
       }
+      board.togglePiece(row, col);
     }
   };
 
